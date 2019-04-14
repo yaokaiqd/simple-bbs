@@ -1,0 +1,20 @@
+extends layout.pug
+
+block content
+  div
+    h3=post.title
+    p=post.content
+    a(href='/users/' + post.useid)=post.name
+    img(width=30 height=30 src='/avator/' + post.avator)
+  div
+    ul
+      each c in comment
+        li
+          p=c.comment
+          a(href='/users/' + c.commentid)=c.name
+          img(width=30 height=30 src='/avator/' + c.avator)
+  form(action='/addComment' method='post')
+    input(hidden='true' name='postid' value=post.id) 
+    textarea(placeholder='请输入评论' name='comment')
+    br
+    button 提交评论

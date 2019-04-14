@@ -1,0 +1,20 @@
+extends layout.pug
+
+block content
+  p=user.name
+  div
+    p 
+      img(width=30 height=30 src='/avator/' + user.avator)
+      | #{user.name}的帖子
+    ul
+      each article in post
+        li
+          p
+            a(href='/post/' + article.id)=article.title
+  div
+    p 他的评论
+    ul
+      each c in comment
+        li
+          p
+            a(href='/post/' + c.articleid)=c.comment  

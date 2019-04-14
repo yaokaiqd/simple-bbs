@@ -1,0 +1,319 @@
+@import "./normalize.css";
+
+.border() {
+  border: 1px solid;
+}
+.left() {
+  div.temp {
+    overflow: hidden;
+    float: right;
+    text-align: center;
+    height: 200px;
+    div {
+      overflow: hidden;
+      border: 1px solid #fff;
+      width: 100px;
+      height: 100px;
+      border-radius: 50px;
+      margin-right:10px;
+    }
+    h3 {
+      font-size: 14px;
+      width: 100px;  
+      margin-right:10px;
+      a {
+        color: #0074D9;
+      }
+    }
+  }
+}
+.right() {
+  padding: 10px;
+  border: 2px solid rgb(130, 208, 247);
+  border-radius: 5px;
+  h3 {
+    a {
+      font-size: 20px;
+      font-weight: 600;
+      color: #0074D9;
+    }
+    margin: 0;
+  }
+  p {
+    a {
+      font-size: 16px;
+      color: #111111;
+      font-weight: 600;
+    }
+  }
+  div {
+    color: #AAAAAA;
+    font-size: 14px;
+    span {
+      float: right;
+    }
+  }
+}
+.box() {
+  box-sizing: border-box;
+  width: 400px;
+  border: 1px solid #bbb;
+  border-radius: 5px;
+  margin: 20px auto;
+  padding: 10px;
+  input {
+    display: block;
+    height: 30px;
+    width: 380px;
+    border-radius: 5px;
+    border: 1px solid #AAA;
+    padding: 0 10px;
+    box-sizing: border-box;
+  }
+  label {
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 40px;
+  }
+  button {
+    width: 380px;
+    color: #fff;
+    background-color: #0074D9;
+    border-radius: 5px;
+    font-size: 18px;
+    height: 30px;
+    border: none;
+    margin-top: 20px;
+  }
+}
+//导航
+header {
+  background-color: #0074D9;
+  height: 50px;
+  > div {
+    a {
+      font-size: 30px;
+      font-weight: 700;
+      color: #fff;
+      text-decoration: none;
+      line-height: 50px;
+    }
+    margin-left: 20px;
+    display: inline-block;
+  }
+  nav {
+    margin-right: 20px;
+    float: right;
+    line-height: 50px;
+    div {
+      display: inline-block;
+    }
+    a {
+      text-decoration: none;
+      color: #fff;
+      font-size: 20px;
+      margin-left: 10px;
+    }
+  }
+}
+//主体
+main {
+  margin: auto;
+  width: 960px;
+  //主页
+  ul.main {
+    li {
+      display: flex;
+      margin-bottom: 10px;
+      a {
+        text-decoration: none;
+      }
+      section.left {
+        flex: 1;
+        .left;
+      }
+      section.right {
+        flex: 4;
+        .right;
+        p {
+          overflow: hidden;
+          height: 125px;
+        }
+      }
+    }
+  }
+
+  //帖子
+  main.article {
+    div.temp {
+      a {
+        text-decoration: none;
+      }
+    }
+    div.article {
+      margin-top: 10px;
+      display: flex;
+      section.left {
+        flex: 1;
+        .left;
+      }
+      section.right {
+        flex: 4;
+        .right;
+        p {
+          min-height: 125px;
+        }
+      }
+    }
+    div.comment {
+      border: 2px solid rgb(130, 208, 247);
+      padding: 10px;
+      width: 777px;
+      margin-top: 20px;
+      margin-left: 185px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+      box-sizing: border-box;
+      > h3 {
+        border-bottom: 1px solid #AAA;
+      }
+      section.commentItem {
+        > div {
+          display: flex;
+          margin-bottom: 20px;
+          div.left {
+            flex: 1;
+            div.avatar {
+              border-radius: 25px;
+              overflow: hidden;
+              width: 50px;
+              height: 50px;
+              margin-left: 15px;
+            }
+          }
+          div.right {
+            flex:9;
+            h3 {
+              margin: 0;
+              font-size: 14px;
+              color: #AAA;
+              font-weight: 500;
+              a {
+                text-decoration: none;
+                color: #0074D9;
+                font-size: 16px;
+              }
+            }
+            p {
+              margin-top: 5px;
+            }
+          }
+        }
+      }
+      section.commentBox {
+        margin-left: 15px;
+        button {
+          background-color: #7FDBFF;
+          color: #fff;
+          display: block;
+          border: none;
+          border-radius: 5px;
+          width:100px;
+          height: 40px;
+          margin-top: 10px;
+        }
+      }
+    }
+  }
+  //用户信息
+  main.user {
+    display: flex;
+    div.left {
+      flex:1;
+      div {
+        margin-top: 20px;
+        margin-left: 50px;
+        width: 100px;
+        height: 100px;
+        border-radius: 50px;
+        overflow: hidden;
+        border: 1p solid #fff;
+      }
+    }
+    div.right {
+      flex:4;
+      border: 1px solid #0074D9;
+      border-radius: 5px;
+      margin-top: 20px;
+      margin-bottom: 20px;
+      padding: 10px;
+      > h3 {
+        margin:0;
+        border-bottom: 1px solid #aaa;
+      }
+      section.articleItem {
+        height: 40px;
+        line-height: 40px;
+        padding-left: 20px;
+        &:hover {
+          background-color: rgb(154, 188, 240);
+        }
+        span {
+          float: right;
+          color: #AAA;
+        }
+        a {
+          text-decoration: none;
+          color: #111;
+          font-size: 18px;
+          display: block;
+        }
+      }
+      section.commentItem {
+        height: 40px;
+        line-height: 40px;
+        padding-left: 20px;
+        &:hover {
+          background-color: rgb(154, 188, 240);
+        }
+        a {
+          text-decoration: none;
+          color: #111;
+          font-size: 18px;
+          span {
+            overflow: hidden;
+            text-overflow:ellipsis;
+            white-space: nowrap;
+            width: 740px;
+            display: inline-block;
+          }
+        }
+      }
+    }
+  }
+  //注册
+  section.register {
+    .box;
+    height: 400px;
+    input.avatar {
+      padding: 0;
+      border: none;
+    }
+    section.msg {
+      color: #01ff70;
+    }
+  }
+  //登录
+  section.login {
+    .box;
+  }
+  section.addPost {
+    .box;
+    div.postBox {
+      width: 380px;
+      height: 300px;
+      margin-top: 20px;
+      overflow: hidden;
+    }
+  }
+}

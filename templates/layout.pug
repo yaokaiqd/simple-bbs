@@ -1,0 +1,25 @@
+doctype html
+html
+  head  
+    title 
+    link(rel="stylesheet" href="/static/css/common.css")
+  body
+    header
+      ul
+        li
+          a(href="/") 首页
+        if(user)
+          li
+            span hi 
+              a(href="/setUser") #{user.name}
+              img(width=30 height=30 src="/avator/" + user.avator alt=user.name)
+          li
+            a(href="/logout") 登出
+        else
+          li
+            a(href="/login") 登录
+        li
+          a(href="/addPost") 发帖
+    block content
+    footer copyright 
+      

@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <!-- import css -->
+  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+  <!-- import responsive layout -->
+  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/display.css">
+  <link rel="stylesheet" href="/static/css/common.css">
+  <title>Vue-bbs</title>
+</head>
+<body>
+  <div id="app">
+    <el-container>
+      <el-header>
+        <el-menu :default-active="$route.path" class="el-menu-demo" mode="horizontal" @select="handleSelect" router>
+          <el-menu-item index="/">首页</el-menu-item>
+            <el-menu-item index="/register">注册</el-menu-item>
+            <el-menu-item index="/login" v-show="!user" @click="visible = true">登录</el-menu-item>
+            <el-menu-item index="/addPost" v-show="user" @click="visible = true">发帖</el-menu-item>
+            <el-menu-item index="/logout" v-show="!user">登出</el-menu-item>
+            <el-submenu index="/" v-show="user">
+              <template slot="title">我</template>
+              <el-menu-item :index="'/user/' + $data.user">我的帖子</el-menu-item>
+              <el-menu-item index="/user">设置</el-menu-item>
+              <el-menu-item index="/user/3">我的帖子</el-menu-item>
+            </el-submenu>
+            <el-menu-item index="/about">关于</el-menu-item>
+        </el-menu>
+      </header>
+      <el-main>
+          <router-view></router-view>
+      </el-main>
+      <el-footer>
+        <span>@YK</span>
+      </footer>
+    </el-container>
+  </div>
+</body>
+<!-- import Vue -->
+<script src='/static/js/vue-2.5.17.js'></script>
+<!-- import Vue-router -->
+<script src='/static/js/vue-router3.0.2.js'></script>
+<!-- import Element JavaScript -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<!-- import axios -->
+<script src='/static/js/axios-0.18.0.js'></script>
+<script>
+  const router = new VueRouter({
+    routes:[
+      {
+        path: '/',
+        component: {
+          template:`
+            <ul>
+              <li v-for='p in posts'>
+                <section><img width="30" height="30" :src="p.avatar ? '/avatar/' + p.avatar : '/avatar/' "/></section>
+                <section><router-link :to="'/user/' + p.useid">{{p.name}}</router-link></section>
+                <section><router-link :to="'/post/' + p.id">{{p.title}}</router-link></section>
+                <section>{{new Date(p.time)}}</section>
+                <section>{{p.c}}</section>
+              </li>
+            </ul>  
+          `,
+          data() {
+            return {
+              posts:[],
+            }
+          },
+          async created() {
+            var res = await axios.get('/api/post')
+            this.posts = res.data
+          },
+        }
+      },
+      {
+        path: '/register',
+        component: {
+          template:`
+            <el-dialog :visible.sync="visible" title="注册" width="30%" @close="closeRegister">
+              
+              <span slot="footer" class="dialog-footer">
+                <el-button @click="visible = false">取 消</el-button>
+                <el-button type="primary" @click="visible = false;submit()">注 册</el-button>
+              </span>
+            </el-dialog>
+          `,
+          data() {
+            return {
+              account: '',
+              password: '',
+              name: '',
+              accMsg:'',
+              passMsg:'',
+              nameMsg:'',
+              visible: true,
+            }
+          },
+          methods: {
+            closeRegister() {
+              this.$router.go(-1)
+            },
+            async submit() {
+              var formData = new FormData()
+              formData.append('avatar',this.$refs.avatar.files[0])
+              formData.append('name',this.$data.name)
+              formData.append('account',this.$data.account)
+              formData.append('password',this.$data.password)
+              var msg = await axios.post('/register',formData,{
+                headers: {'content-type': 'multipart/form-data'}
+              })
+              if(msg.data) {
+                alert(msg.data)
+                location.href = '/static/vue-bbs/'
+              } else {
+                alert('请输入全部字段')
+              }
+            },
+            async testAccount() {
+              var msg = await axios.post('/register/account',{
+                account: this.$data.account
+              })
+              this.accMsg = msg.data
+              if(msg.data == '账户重复') {
+                this.account = ''
+              }
+            },
+            testPassword() {
+              this.passMsg = 'ok'
+            },
+            async testName() {
+              var msg = await axios.post('/register/name',{
+                name: this.$data.name
+              })
+              this.nameMsg = msg.data
+              if(msg.data == '用户名重复') {
+                this.name = ''
+              }
+            },
+
+          },
+        },
+      },
+      {
+        path: '/login',
+        component:{
+          template: `
+            <section class='shadow'>
+              <div>
+                <label>账号：<input type='text' v-model.trim.lazy='account' /></label>
+                <label>密码：<input type='password' v-model.trim.lazy='password' /></label>
+              </div>
+              <button @click='submit'>登录</button>
+            </section> 
+          `,
+          data() {
+            return {
+              account: '',
+              password: '',
+            }
+          },
+          methods: {
+            async submit() {
+              var msg = await axios.post('/login',{
+                account: this.$data.account,
+                password: this.$data.password,
+              })
+              if(msg.data.id) {
+                this.$root.$data.user = msg.data.id
+                this.$router.push('/')
+              } else {
+                alert('用户名或密码出错')
+                this.$data.password = ''
+              }
+            }
+          }
+        }
+      },
+      {
+        path:'/addPost',
+        component: {
+          template: `
+            <section class='shadow'>
+              <div>
+                <label>标题：<input type='text' v-model.trim.lazy='title' /></label>
+                <textarea cols="30" rows="10" v-model.lazy='content'></textarea>
+              </div>
+              <button @click='submit'>发表</button>
+            </section>             
+          `,
+          data() {
+            return {
+              title:'',
+              content:'',
+            }
+          },
+          methods: {
+            async submit() {
+              if(this.$root.user) {
+                if(this.title && this.content) {
+                  var article = await axios.post('/addPost',{
+                    title: this.$data.title,
+                    content: this.$data.content,
+                  })
+                  alert('发布成功')
+                  this.title = ''
+                  this.content = ''
+                  this.$router.push({path: `/post/${article.data.id}`})
+                } else {
+                  alert('标题与内容均不能为空')
+                }
+              } else {
+                alert('请先登录')
+              }    
+            }
+          }
+        }
+      },
+      {
+        path: '/post/:id',
+        component: {
+          template: `
+            <main>
+              <section><img :src="post.avatar ? '/avatar/' + post.avatar : '/avatar/xxx'" with='30' height='30' />{{post.name}}</section>
+              <section>
+                <div>
+                  <h3>{{post.title}}</h3>
+                  <p>{{post.content}}</p>
+                  <div>{{post.time}}</div>
+                </div>
+              </section>
+              <section v-for='c in comment'>
+                <section><img :src="c.avatar ? '/avatar/' + c.avatar : '/avatar/xxx'" width='30' height='30'/>{{c.name}}</section>
+                <section>
+                  <div>
+                    <p>{{c.comment}}</p>
+                    <div>{{c.time}}</div>
+                  </div>
+                </section>
+              </section>
+              <section v-show='$root.$data.user'>
+                <textarea  maxlength="140" cols="30" rows="10" v-model='newComment'></textarea>
+                <button @click='addComment'>添加评论</button>
+              </section>
+            </main>
+          `,
+          data() {
+            return {
+              post: '',
+              comment: '',
+              newComment: '',
+            }
+          },
+          methods: {
+            async addComment() {
+              var comment = await axios.post('/addComment',{
+                comment: this.$data.newComment,
+                postid: this.$data.post.id,
+              }) 
+              this.$data.comment.push(comment.data)
+              this.newComment = ''
+            }
+          },
+          async created() {
+            var article = await axios.get('/api/post/' + this.$route.params.id)
+            if(article.data !== '此文章不存在') {
+              this.$data.post = article.data.post
+              this.$data.comment = article.data.comment
+            } else {
+              alert(article.data)
+              this.$router.push('/')
+            }
+          }
+        }
+      },
+      {
+        path: '/user/:id',
+        component: {
+          template: `
+            <main>
+              <section><img :src="user.avatar ? '/avatar/' + user.avatar : '/avatar/xxx'" with='30' height='30' />{{post.name}}</section>
+              <section v-for='p in post'>
+                <div>
+                  <h3>{{p.title}}</h3>
+                  <p>{{p.content}}</p>
+                  <div>{{p.time}}</div>
+                </div>
+              </section>
+              <section v-for='c in comment'>
+                <section><img :src="c.avatar ? '/avatar/' + c.avatar : '/avatar/xxx'" width='30' height='30'/>{{c.name}}</section>
+                <section>
+                  <div>
+                    <p>{{c.comment}}</p>
+                    <div>{{c.time}}</div>
+                  </div>
+                </section>
+              </section>
+            </main> 
+          `,
+          data() {
+            return {
+              user:'',
+              post:'',
+              comment:'',
+            }
+          },
+          async created() {
+            var user = await axios.get('/api/users/' + this.$route.params.id)
+            if(user.data !== '用户不存在') {
+              this.$data.user = user.data.user
+              this.$data.post = user.data.post
+              this.$data.comment = user.data.comment
+            } else {
+              alert(user.data)
+              this.$router.push('/')
+            }
+          }
+        }
+      },
+      {
+        path: '/setUser',
+        component: {
+          template: {
+
+          },
+          data() {
+            return {
+
+            }
+          },
+
+        }
+      },
+    ]
+  })
+
+  const app = new Vue({
+    el: '#app',
+    data: {
+      user: null,
+      defaultActive: '/',
+      visible: false,
+    },
+    // watch: {
+    //   '$route'(to,from) {
+    //     this.$data.defaultActive = to.path
+    //   }
+    // },
+    methods: {
+      logout() {
+        this.user = null
+        axios.get('/logout')
+        this.$router.push('/')
+      },
+      handleSelect(key,keyPath) {
+        console.log(key,keyPath)
+      }
+    },
+    async created() {
+      // this.$data.defaultActive = this.$route.path
+      var user = await axios.get('/api/userInfo')
+      this.user = user.data ? user.data.id : null
+    },
+    router,
+  })
+</script>
+</html>
+<!-- 疑问 var msg = await axios 返回的msg是什么 -->
+<!-- 疑问 postid路由   v-show='user'  user: this.$root.$data.user, 此时当页面刷新时为什么无法正确展示show 而若直接将$root.$data.user放入v-show字段则可以避免这种错误？   暂时理解为   user为axios异步获取 -->
+<!-- 疑问 若直接在地址栏内路由跳转且回车而不是刷新，则根页面不会刷新 因此 导航栏无法检测到路由地址的变化,如何解决 -->
+<!-- 疑问 element 二级菜单无法正确识别高亮  -->
